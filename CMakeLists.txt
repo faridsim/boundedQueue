@@ -1,21 +1,31 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.16)
 
-project(boundflow)
+project(boundflow LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include_directories(include)
+enable_testing()
 
-add_library(boundflow
-    src/boundflow.cpp
+add_subdirectory(external/googletest)
+
+add_executable(boundflow_tests
+    tests/test_bounded_queue.cpp
 )
 
-add_executable(boundflow_smoke
-    apps/boundflow_smoke.cpp
+target_include_directories(boundflow_tests PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-target_link_libraries(boundflow_smoke
-    boundflow
+target_link_libraries(boundflow_tests PRIVATE
+    GTest::gtest_main
 )
+
+include(GoogleTest)
+gtest_discover_tests(boundflow_tests)
+
+
+
+
 
 
