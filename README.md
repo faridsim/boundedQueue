@@ -4,7 +4,7 @@ A bounded thread-safe FIFO queue implemented in modern C++20.
 
 ## Project Status
 
-🚧 Active development
+Active development
 
 The project is currently evolving toward a more complete concurrency
 library with stronger verification, richer APIs, and additional
