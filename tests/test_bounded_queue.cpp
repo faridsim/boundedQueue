@@ -14,7 +14,7 @@ TEST(BoundedQueueStateTest, NewlyConstructedQueueIsEmpty)
 
 
 
-//s1
+
 TEST(BoundedQueueStateTest, NewlyConstructedQueueIsOpen)
 {
     bounded_queue<int> queue(2);
@@ -22,7 +22,7 @@ TEST(BoundedQueueStateTest, NewlyConstructedQueueIsOpen)
     EXPECT_FALSE(result); 
 }
 
-//s2
+
 TEST(BoundedQueueStateTest, QueueIsClosedAfterClose)
 {
     bounded_queue<int> queue(2);
@@ -32,9 +32,7 @@ TEST(BoundedQueueStateTest, QueueIsClosedAfterClose)
 }
 
 
-//s3 and s7 as interaction test together
-//s3-push for open and empty 
-//s7-pop for open  and non empty
+
 TEST(BoundedQueueStateTest, PushedItemCanBePopped)
 {
     bounded_queue<std::string> queue(6);
@@ -43,8 +41,7 @@ TEST(BoundedQueueStateTest, PushedItemCanBePopped)
     queue.pop(item);
     EXPECT_EQ(item,"hello");
 }
-//s4 
-//open-full ...>get blocked >open-empty...>unblocked
+
 
 
 TEST(BoundedQueueStateTest,  OpenFullQueueBlocksPushUntilSpaceIsAvailable)
@@ -70,7 +67,7 @@ TEST(BoundedQueueStateTest,  OpenFullQueueBlocksPushUntilSpaceIsAvailable)
 
 
 
-//s4
+
 TEST(BoundedQueueStateTest,  OpenFullQueueBlocksPushUntilClosed)
 {
     //open and empty
@@ -90,7 +87,7 @@ TEST(BoundedQueueStateTest,  OpenFullQueueBlocksPushUntilClosed)
 
 
 
-//s5
+
 TEST(BoundedQueueStateTest, ClosedEmptyQueueReturnClosedAfterPush)
 {
     bounded_queue<std::string> queue(6);
@@ -102,7 +99,7 @@ TEST(BoundedQueueStateTest, ClosedEmptyQueueReturnClosedAfterPush)
 
 
 
-//s6
+
 TEST(BoundedQueueStateTest, ClosedNonEmptyQueueReturnClosedAfterPush)
 {
     bounded_queue<std::string> queue(6);
@@ -131,7 +128,7 @@ TEST(BoundedQueueStateTest,OpenEmptyQueueBlocksPopUntillElementIsAvailable)
 
 
 
-//s8 open and empty ...>blcoks ..>closed and empty ...>unblcoks 
+
 TEST(BoundedQueueStateTest,OpenEmptyQueueBlocksPopUntillClosed)
 {
     bounded_queue<std::string> queue(6);
@@ -147,16 +144,16 @@ TEST(BoundedQueueStateTest,OpenEmptyQueueBlocksPopUntillClosed)
     EXPECT_EQ(result,op::status::closed);
 }
 
-//s9
+
 TEST(BoundedQueueStateTest, ClosedNonEmptyQueueReturnsSucceedAfterPop)
 {
     bounded_queue<std::string> queue(6);
 
-    //closed  and  empty
+    
     queue.push(std::string ("hello"));
     queue.close();
 
-    //closed and non-empty-statrting state of test
+    
     std::string item;
     //EXPECT_FALSE(queue.is_empty());
     auto result=queue.pop(item);

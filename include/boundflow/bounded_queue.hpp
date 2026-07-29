@@ -22,7 +22,7 @@ private:
     bool closed=false;
     
 public:
-        //not know syntax
+        
     bounded_queue(std::size_t capacity):capacity(capacity){}    
     bounded_queue(const bounded_queue&) = delete;
     bounded_queue(bounded_queue&&) = delete;
@@ -53,7 +53,7 @@ public:
     void close(){
 
         {
-        //WE DONT WANT TO PUSH TO ABLE TO PUSH WHILE CLOSED IS CALLED BY ANOTHER FUCNTION
+        
         std::lock_guard<std::mutex> lk(mutex);
         closed=true;
         }
@@ -119,7 +119,7 @@ op::status pop(T& item)
 }
 
 
-//if not-empty return immedilaltely
+
 bool try_pop(T& item){
 
     {
