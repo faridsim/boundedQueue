@@ -1,0 +1,57 @@
+# Engineering Decision Records
+
+This directory contains architectural and design decisions made during
+the development of Boundflow.
+
+The purpose of these records is not to document every implementation
+detail, but to preserve important engineering choices:
+
+- what problem required a decision;
+- what alternatives were considered;
+- why one option was selected;
+- what consequences were accepted.
+
+A design decision should answer:
+
+> Why was this design chosen instead of other reasonable alternatives?
+
+The resulting system behaviour is documented in:
+
+- `docs/design.md`
+
+The implementation and tests provide executable evidence of these decisions.
+
+---
+
+# Decision Index
+
+| ID | Decision | Status |
+|----|----------|--------|
+| ADR-0001 | Use mutex-based synchronization instead of lock-free design | Accepted |
+| ADR-0002 | Use std::deque as the initial backing storage | Accepted |
+| ADR-0003 | Keep queue identity stable by disabling copy and move | Accepted |
+| ADR-0004 | Expose blocking and immediate operations as separate APIs | Accepted |
+
+---
+
+# ADR Lifecycle
+
+A decision may move through these states:
+
+## Proposed
+
+The problem has been identified and alternatives are being evaluated.
+
+## Accepted
+
+The design choice has been selected and implemented.
+
+## Superseded
+
+A later decision replaced the previous approach.
+
+---
+
+# Relationship Between Decisions and Design
+
+Decision records explain:
