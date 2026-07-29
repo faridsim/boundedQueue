@@ -87,6 +87,9 @@ TEST(BoundedQueueStateTest,  OpenFullQueueBlocksPushUntilClosed)
     auto result=futrue.get();
     EXPECT_EQ(result,op::status::closed);
 }
+
+
+
 //s5
 TEST(BoundedQueueStateTest, ClosedEmptyQueueReturnClosedAfterPush)
 {
@@ -167,10 +170,18 @@ TEST(BoundedQueueStateTest, ClosedEmptyQueuReturnClosedAfterPop)
 {
     bounded_queue<std::string> queue(6);
     queue.close();
+
+
+
+
+    
     std::string item;
     auto result=queue.pop(item);
     EXPECT_EQ(result,op::status::closed);
 }
+
+
+
 
 
 
