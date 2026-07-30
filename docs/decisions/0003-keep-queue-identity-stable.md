@@ -1,4 +1,4 @@
-# ADR-0003: Keep Queue Identity Stable by Disabling Copy and Move
+# ADR-0003: Keep Queue Identity Stable
 
 ## Status
 
@@ -8,75 +8,123 @@ Accepted
 
 2026-07-29
 
----
+## Context
 
-# Context
+A `bounded_queue<T>` owns both buffered elements and synchronization
+state.
 
-Boundflow is a concurrent queue that owns synchronization state.
+Its synchronization state includes a mutex, condition variables, and
+the relationships between the queue and threads that may currently be
+using or waiting on it.
 
-A queue object contains:
+Ordinary copy or move syntax would require a clearly defined answer to
+questions such as:
 
-- stored elements;
-- mutex;
-- condition variables;
-- closed state;
-- relationships with threads that may currently be waiting.
+- what queue state is copied or transferred;
+- whether the new queue is independent;
+- what happens to synchronization state;
+- what happens to threads interacting with the original object.
 
-The public type must define whether queue objects can be copied or moved.
+No such copy, snapshot, or transfer contract is required for the current
+queue.
 
-The compiler-generated copy and move operations are not appropriate
-because they cannot determine the intended meaning of transferring
-synchronization state.
+The compiler should not be allowed to imply semantics that the project
+has not defined.
 
----
+## Decision Drivers
 
-# Decision Drivers
+- keep synchronization ownership unambiguous;
+- prevent unsupported object operations at compile time;
+- avoid pretending that buffered data and synchronization state have
+  ordinary value semantics;
+- keep one queue instance associated with one synchronization state;
+- avoid introducing snapshot or transfer behaviour without a concrete
+  requirement.
 
-The decision is based on:
+## Considered Options
 
-## Synchronization ownership
+### Define copy and move semantics
 
-The queue is not only a container of elements.
+This would require an explicit contract for copying or transferring
+buffered elements and synchronization-related state.
 
-It is also a synchronization object.
+Such behaviour is not required by the current project, and no clear
+semantics have been adopted.
 
-Copying or moving requires defining what happens to:
+### Disable copy and move operations
 
-- mutex ownership;
-- waiting threads;
-- condition variables;
-- lifecycle state;
-- buffered elements.
+Construct each queue in its intended location and keep that queue object
+stable throughout its lifetime.
 
----
+Callers share access to that object rather than copying or moving the
+queue itself.
 
-## Clear object semantics
+## Decision
 
-Users should understand whether two queue objects represent:
+Disable:
 
-- independent queues;
-- shared queues;
-- transferred ownership;
-- snapshots of previous state.
+- copy construction;
+- copy assignment;
+- move construction;
+- move assignment.
 
-Ambiguous semantics create correctness risks.
-
----
-
-## Prevent invalid usage
-
-The type system should prevent operations that have no well-defined
-meaning.
-
----
-
-# Options Considered
-
----
-
-# Option 1: Allow Copy Construction
-
-Example:
+The current declarations are:
 
 ```cpp
-queue<int> q2 = q1;
+bounded_queue(const bounded_queue&) = delete;
+bounded_queue(bounded_queue&&) = delete;
+bounded_queue& operator=(const bounded_queue&) = delete;
+bounded_queue& operator=(bounded_queue&&) = delete;
+```
+
+This is the only code excerpt needed because the decision concerns the
+type interface itself.
+
+## Consequences
+
+### Positive
+
+- unsupported copy and move operations fail at compile time;
+- synchronization ownership remains clear;
+- one queue object continues to represent one queue state;
+- the restriction is visible in the public interface;
+- no accidental copy or transfer semantics are implied.
+
+### Negative
+
+- the queue cannot be used directly where a copyable or movable value is
+  required;
+- ownership transfer requires another ownership mechanism;
+- callers must manage the queue’s location and lifetime explicitly.
+
+### Accepted trade-off
+
+The project accepts reduced value-type flexibility in exchange for
+clear synchronization ownership and an explicit object contract.
+
+## Validation
+
+Compile-time type-trait tests should confirm that the queue is neither
+copyable nor movable.
+
+Runtime tests are not required to validate operations that must fail
+during compilation.
+
+## Reconsider When
+
+Reconsider this decision when the project gains a concrete requirement
+for:
+
+- queue snapshots;
+- transferring ownership of an inactive queue;
+- a shared-state handle;
+- storage inside an abstraction that requires movable values.
+
+Any change must first define the observable semantics of the new
+operation.
+
+## Related Decisions
+
+- ADR-0001: Use mutex-based synchronization
+- ADR-0002: Use `std::deque` as the initial backing store
+- ADR-0004: Expose blocking and immediate operations
