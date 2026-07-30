@@ -63,7 +63,7 @@ public:
     op::status push(T&& item){
         {
         std::unique_lock<std::mutex> lk(mutex);
-        //not know
+        
         not_full.wait(lk, [this]() {return closed ||  content.size() < capacity;});
         if (closed ){
             return op::status::closed ;
@@ -108,7 +108,7 @@ op::status pop(T& item)
 
 
 
-    // Open or closed, but an item exists
+    
     item = std::move(content.front());
     content.pop_front();
 
