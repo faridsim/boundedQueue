@@ -7,9 +7,13 @@
 namespace op{
     enum class status{
         SUCCEED,
+        Full,
+        empty,
         closed
+        
     };
 }
+
 
 template<typename T>
 class bounded_queue{
@@ -78,17 +82,32 @@ public:
 
 
 
-    bool try_push(T&& item){
+    op::status try_push(T&& item){
     {
         std::unique_lock<std::mutex> lk(mutex);
         if (content.size()==capacity){
-            return false;
-        }    
+            return op::status::Full;
+        }
+
+
+        if (closed){
+            return op::status::closed;
+        }
+
+
+
+
         content.push_back(std::move(item));    
     }
     not_empty.notify_one();
-    return true;
+    return op::status::SUCCEED;
 }
+
+
+
+
+
+
 
 
 
@@ -119,20 +138,43 @@ op::status pop(T& item)
 }
 
 
-
-bool try_pop(T& item){
+op::status try_pop(T& item){
 
     {
     std::unique_lock<std::mutex> lk(mutex);
-    if(content.empty())
-    return false;
-    item=std::move(content.front());
-    content.pop_front();
+    if(!content.empty()){     
+        item=std::move(content.front());
+        content.pop_front();
     }
+    else if (closed){
+        return op::status::closed;
+    }
+
+    else{
+
+        return op::status::empty;
+    }
+    }
+
     not_full.notify_one();
-    return true;
-}
+    return op::status::SUCCEED;
 };
+
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -178,6 +178,61 @@ TEST(BoundedQueueStateTest, ClosedEmptyQueuReturnClosedAfterPop)
 }
 
 
+TEST(BoundedQueueStateTest, OpenEmptyQueuReturnSucceedAfterTry_Push)
+{
+    bounded_queue<std::string> queue(6);
+    auto result=queue.try_push(std::string("hello"));
+    EXPECT_EQ(result,op::status::SUCCEED);
+    std::string item;
+    queue.pop(item);
+    EXPECT_EQ(item,"hello");
+}
+
+
+
+//important
+TEST(BoundedQueueStateTest,OpenFullQueuReturnFullAfterTry_Push)
+{
+    //open and empty
+    bounded_queue<std::string> queue(1);
+    queue.try_push("first");
+    auto result=queue.try_push("secoond");
+    EXPECT_EQ(result,op::status::Full);
+    std::string item;
+    queue.pop(item);
+    EXPECT_EQ(item,"first");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -267,99 +322,3 @@ TEST(BoundedQueueStateTest, ClosedorEmptyQueueReturnClosedAfterPop)
 
 }
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
